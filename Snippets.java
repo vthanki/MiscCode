@@ -26,3 +26,30 @@ public static void printNprimes(int n) {
 		i++;
 	}
 }
+
+public static void printGDC(int a, int b) {
+int max = a > b ? a:b;
+int gcd = 1;
+for (int i = 2; i < max; i++) {
+    if (a % i == 0 && b % i == 0) {
+        gcd *= i;
+        a /= i; b /= i;
+        i--;
+    }
+}
+//System.out.println(gcd);
+}
+
+public static int consecutiveFibonacciSum(int a, int b) {
+	int c=0,d=1,ans = 0, sum = 0;
+	for (int i = 1; i < b; i++) {
+	    System.out.println(d);
+	    if (i >= a)
+	        ans+= d;
+	    sum = c + d;
+	    c = d;
+	    d = sum;
+	
+	}
+	return ans;
+}
