@@ -40,6 +40,19 @@ for (int i = 2; i < max; i++) {
 //System.out.println(gcd);
 }
 
+int fastGCD(long a, long b) {
+        long m = 0;
+        while (a > b) {
+            m = a % b;
+            if (m > 0) {
+                a = b;
+                b = m;
+            } else
+                return (int) b;
+        }
+        return GCD(b,a);
+}
+
 public static int consecutiveFibonacciSum(int a, int b) {
 	int c=0,d=1,ans = 0, sum = 0;
 	for (int i = 1; i < b; i++) {
