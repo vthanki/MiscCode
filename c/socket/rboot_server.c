@@ -47,8 +47,6 @@ int main(int argc, char **argv)
 	struct RBoot_t *rb_pkt;
 
 	struct ifreq ifr;
-	memset(&ifr, 0, sizeof(struct ifreq));
-	snprintf(ifr.ifr_name, sizeof(ifr.ifr_name), "eno1");
 	if (argc != 2) {
 		fprintf(stderr, "usage: %s <port>\n", argv[0]);
 		exit(1);
@@ -85,8 +83,7 @@ int main(int argc, char **argv)
 				sizeof(serveraddr)) < 0)
 		error("ERROR on binding");
 
-	ioctl(sockfd, SIOCGIFINDEX, &ifr);
-	setsockopt(sockfd, SOL_SOCKET, SO_BINDTODEVICE,  (void*)&ifr, sizeof(struct ifreq));
+	setsockopt(sockfd, SOL_SOCKET, SO_BROADCAST,  &optval, sizeof(optval));
 
 	/*
 	 * main loop: wait for a datagram, then echo it
@@ -116,7 +113,8 @@ int main(int argc, char **argv)
 		 */
 		rb_pkt->rb_op = 2;
 		//clientaddr.sin_addr.s_addr = inet_addr("172.16.0.255");
-		clientaddr.sin_addr.s_addr = inet_addr("0.0.0.0");
+		clientaddr.sin_addr.s_addr = inet_addr("255.255.255.255");
+		clientaddr.sin_port = htons((unsigned short)8153);
 		n = sendto(sockfd, buf, sizeof(struct RBoot_t), 0,
 				(struct sockaddr *) &clientaddr, clientlen);
 		if (n < 0)
