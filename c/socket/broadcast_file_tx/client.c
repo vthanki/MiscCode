@@ -111,7 +111,14 @@ void fetch_file_info(const char *fname, int *nr_chunks, int *last_chunk_sz)
 	*nr_chunks = brhdr->chunk.nr_chunks;
 	*last_chunk_sz = brhdr->len;
 
-	print_pkt_info(brhdr);
+	if (*nr_chunks < 0) {
+		printf("Requested file %s not found on server\n", fname);
+	} else {
+		printf("File %s found on server\n", fname);
+		printf("Total Chunks :%d\n", *nr_chunks);
+		printf("File Size :%d Bytes\n",
+			((*nr_chunks - 1) * MAX_BR_PAYLOAD_LEN) + brhdr->len);
+	}
 }
 
 void fetch_file(int fd, int nr_chunks, int last_chunk_sz)
@@ -169,18 +176,23 @@ retry:
 	}
 }
 
-int main(int argc, char **argv)
+int main(int argc, char *argv[])
 {
 	int nr_chunks = 0, last_chunk_sz = 0, fd;
-	char *fname = "uImage";
+
+	if (argc != 2) {
+		printf("Please provide the file name\n");
+		printf("Usage: %s <file-name>\n", argv[0]);
+		return -1;
+	}
 
 	setup_client_socket();
 
 	if (send_discover() == BR_SERVER_FOUND) {
-		fetch_file_info(fname, &nr_chunks, &last_chunk_sz);
+		fetch_file_info(argv[1], &nr_chunks, &last_chunk_sz);
 
 		if (nr_chunks > 0) {
-			fd = open(fname, O_RDWR | O_CREAT);
+			fd = open(argv[1], O_RDWR | O_CREAT);
 			if (fd < 0)
 				error("ERROR in opening file");
 
