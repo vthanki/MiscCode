@@ -14,7 +14,7 @@ void print_pkt_info(struct br_hdr *brhdr)
 }
 
 
-void setup_client_socket(void)
+void setup_client_socket(const char *listen_ip)
 {
 	int broadcast_en = 1;
 
@@ -33,7 +33,7 @@ void setup_client_socket(void)
 
 	bzero((char *) &sock.raddr, sizeof(sock.raddr));
 	sock.raddr.sin_family = AF_INET;
-	sock.raddr.sin_addr.s_addr = htonl(INADDR_ANY);
+	sock.raddr.sin_addr.s_addr = inet_addr(listen_ip);
 	sock.raddr.sin_port = htons((unsigned short)BR_PORTC);
 
 	/*
@@ -179,14 +179,20 @@ retry:
 int main(int argc, char *argv[])
 {
 	int nr_chunks = 0, last_chunk_sz = 0, fd;
+	const char *listen_ip;
 
-	if (argc != 2) {
+	if (argc < 2) {
 		printf("Please provide the file name\n");
-		printf("Usage: %s <file-name>\n", argv[0]);
+		printf("Usage: %s <file-name> [listen-IP]\n", argv[0]);
 		return -1;
 	}
 
-	setup_client_socket();
+	if (argv[2])
+		listen_ip = argv[2];
+	else
+		listen_ip = "0.0.0.0";
+
+	setup_client_socket(listen_ip);
 
 	if (send_discover() == BR_SERVER_FOUND) {
 		fetch_file_info(argv[1], &nr_chunks, &last_chunk_sz);

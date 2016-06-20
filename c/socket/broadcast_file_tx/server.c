@@ -5,7 +5,7 @@
 #include "br.h"
 
 static int fd = -1;
-int start_server(int port)
+int start_server(int port, const char *server_ip)
 {
 	int sockfd;
 	struct sockaddr_in serveraddr;
@@ -34,7 +34,7 @@ int start_server(int port)
 	 */
 	bzero((char *) &serveraddr, sizeof(serveraddr));
 	serveraddr.sin_family = AF_INET;
-	serveraddr.sin_addr.s_addr = htonl(INADDR_ANY);
+	serveraddr.sin_addr.s_addr = inet_addr(server_ip);
 	serveraddr.sin_port = htons((unsigned short)port);
 
 	/*
@@ -241,8 +241,14 @@ int process_pkt(int sockfd)
 int main(int argc, char *argv[])
 {
 	int sockfd;
+	const char *server_ip;
 
-	sockfd = start_server(BR_PORTS);
+	if (argv[1])
+		server_ip = argv[1];
+	else
+		server_ip = "0.0.0.0";
+
+	sockfd = start_server(BR_PORTS, server_ip);
 
 	while (process_pkt(sockfd))
 		;
