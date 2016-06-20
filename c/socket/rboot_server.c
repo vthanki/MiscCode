@@ -18,11 +18,11 @@
 #define BUFSIZE 1024
 
 struct RBoot_t {
-	int rb_op;
+	int rb_op;		/* Operation			*/
 	int rb_img_size;
-	int img_pkt_id;
+	int img_pkt_id;		/* Transaction ID		*/
+	int temp;
 };
-
 
 /*
  * error - wrapper for perror
@@ -47,8 +47,8 @@ int main(int argc, char **argv)
 	struct RBoot_t *rb_pkt;
 
 	struct ifreq ifr;
-	if (argc != 2) {
-		fprintf(stderr, "usage: %s <port>\n", argv[0]);
+	if (argc != 3) {
+		fprintf(stderr, "usage: %s <port> <useconds>\n", argv[0]);
 		exit(1);
 	}
 
@@ -89,35 +89,38 @@ int main(int argc, char **argv)
 	 * main loop: wait for a datagram, then echo it
 	 */
 	clientlen = sizeof(clientaddr);
+
+	/*
+	 * recvfrom: receive a UDP datagram from a client
+	 */
+	bzero(buf, BUFSIZE);
+	n = recvfrom(sockfd, buf, BUFSIZE, 0,
+			(struct sockaddr *) &clientaddr, &clientlen);
+	if (n < 0)
+		error("ERROR in recvfrom");
+
+	hostaddrp = inet_ntoa(clientaddr.sin_addr);
+	if (hostaddrp == NULL)
+		error("ERROR on inet_ntoa\n");
+	rb_pkt = buf;
+	printf("server received datagram from (%s)\n", hostaddrp);
+	printf("server received %d/%d bytes:\n", strlen(buf), n);
+	printf("RB operation:%d\n", rb_pkt->rb_op);
+
 	while (1) {
-
-		/*
-		 * recvfrom: receive a UDP datagram from a client
-		 */
-		bzero(buf, BUFSIZE);
-		n = recvfrom(sockfd, buf, BUFSIZE, 0,
-				(struct sockaddr *) &clientaddr, &clientlen);
-		if (n < 0)
-			error("ERROR in recvfrom");
-
-		hostaddrp = inet_ntoa(clientaddr.sin_addr);
-		if (hostaddrp == NULL)
-			error("ERROR on inet_ntoa\n");
-		rb_pkt = buf;
-		printf("server received datagram from (%s)\n", hostaddrp);
-		printf("server received %d/%d bytes:\n", strlen(buf), n);
-		printf("RB operation:%d\n", rb_pkt->rb_op);
-
 		/*
 		 * sendto: echo the input back to the client
 		 */
 		rb_pkt->rb_op = 2;
+		rb_pkt->img_pkt_id++;
 		//clientaddr.sin_addr.s_addr = inet_addr("172.16.0.255");
 		clientaddr.sin_addr.s_addr = inet_addr("255.255.255.255");
 		clientaddr.sin_port = htons((unsigned short)8153);
-		n = sendto(sockfd, buf, sizeof(struct RBoot_t), 0,
+		n = sendto(sockfd, buf, sizeof(buf), 0,
 				(struct sockaddr *) &clientaddr, clientlen);
 		if (n < 0)
 			error("ERROR in sendto");
+		if (atoi(argv[2]))
+			usleep(atoi(argv[2]));
 	}
 }
