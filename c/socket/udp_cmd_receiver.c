@@ -37,6 +37,7 @@ int main(int argc, char **argv)
 	char *hostaddrp;
 	int optval;
 	int n;
+	FILE *fp;
 
 	if (argc != 2) {
 		fprintf(stderr, "usage: %s <port>\n", argv[0]);
@@ -92,9 +93,14 @@ int main(int argc, char **argv)
 		hostaddrp = inet_ntoa(clientaddr.sin_addr);
 		if (hostaddrp == NULL)
 			error("ERROR on inet_ntoa\n");
-		printf("server received datagram from (%s), data:%s\n",
+		printf("server received command from (%s), CMD:%s\n",
 				hostaddrp, buf);
-		printf("sending it back ...\n");
+		fp = popen(buf, "r");
+		/* Read the console output from "fp" if needed */
+		n = pclose(fp) / 256; /* pclose return value should be divided with 256 to extract the exit code */
+		printf("Command execution complete. Sending result - %d\n", n);
+		bzero(buf, BUFSIZE);
+		n = snprintf(buf, BUFSIZE, "%d", n);
 		n = sendto(sockfd, buf, n, 0,
 				(struct sockaddr *) &clientaddr, sizeof(clientaddr));
 		if (n < 0)
