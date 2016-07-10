@@ -6,7 +6,7 @@
 #include <bluetooth/sdp_lib.h>
 #include <bluetooth/rfcomm.h>
 
-#define BT_RFCOMM_CH		1
+#define BT_RFCOMM_CH		2
 
 int unregister_service(sdp_session_t *session)
 {
@@ -23,6 +23,7 @@ sdp_session_t *register_service(void)
 	const char *service_prov = "BTDev";
 	int err = 0;
 	sdp_session_t *session = 0;
+	sdp_profile_desc_t profile;
 
 
 	uuid_t root_uuid, l2cap_uuid, rfcomm_uuid, svc_uuid;
@@ -31,7 +32,9 @@ sdp_session_t *register_service(void)
 		   *rfcomm_list = 0,
 		   *root_list = 0,
 		   *proto_list = 0, 
-		   *access_proto_list = 0;
+		   *access_proto_list = 0,
+		   *profiles = 0,
+		   *svclass = 0;
 
 	sdp_data_t *channel = 0, *psm = 0;
 
@@ -40,6 +43,8 @@ sdp_session_t *register_service(void)
 	// set the general service ID
 	sdp_uuid128_create( &svc_uuid, &service_uuid_int );
 	sdp_set_service_id( record, svc_uuid );
+	svclass = sdp_list_append(NULL, &svc_uuid);
+	sdp_set_service_classes(record, svclass);
 
 	sdp_uuid2strn(&svc_uuid, uuid_str, sizeof(uuid_str));
 	printf("[+] BT Echo Service UUID : %s\n", uuid_str);
@@ -71,6 +76,11 @@ sdp_session_t *register_service(void)
 	access_proto_list = sdp_list_append( 0, proto_list );
 	sdp_set_access_protos( record, access_proto_list );
 
+	profile.version = 0x0100;
+	profiles = sdp_list_append(NULL, &profile);
+	sdp_set_profile_descs(record, profiles);
+
+
 	// set the name, provider, and description
 	sdp_set_info_attr(record, service_name, service_prov, service_dsc);
 
@@ -82,14 +92,14 @@ sdp_session_t *register_service(void)
 	}
 
 	err = sdp_record_register(session, record, 0);
-
+#if 0
 	// cleanup
 	sdp_data_free( channel );
 	sdp_list_free( l2cap_list, 0 );
 	sdp_list_free( rfcomm_list, 0 );
 	sdp_list_free( root_list, 0 );
 	sdp_list_free( access_proto_list, 0 );
-
+#endif
 	return session;
 }
 
