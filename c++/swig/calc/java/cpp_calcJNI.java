@@ -7,9 +7,7 @@
  * ----------------------------------------------------------------------------- */
 
 
-public class cpp_calc {
-  public static double getFinalResult(int a, int b, char c) {
-    return cpp_calcJNI.getFinalResult(a, b, c);
-  }
-
+public class cpp_calcJNI {
+  public final static native double getFinalResult(int jarg1, int jarg2, char jarg3);
+  public final static native long getAString();
 }

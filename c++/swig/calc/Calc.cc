@@ -1,5 +1,4 @@
 #include "Calc.h"
-#include <stdio.h>
 
 using namespace std;
 
@@ -15,6 +14,11 @@ double getFinalResult(int a, int b, char c)
 		}
 	}
 	return -1;
+}
+
+string getAString(void)
+{
+	return "Random";
 }
 /*
 int main()

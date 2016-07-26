@@ -79,4 +79,5 @@ void Calc::setOperands(int a, int b)
 }
 
 double getFinalResult(int a, int b, char c);
+string getAString(void);
 #endif

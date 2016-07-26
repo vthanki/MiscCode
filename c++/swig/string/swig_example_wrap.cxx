@@ -224,28 +224,93 @@ static void SWIGUNUSED SWIG_JavaThrowException(JNIEnv *jenv, SWIG_JavaExceptionC
 #define SWIG_contract_assert(nullreturn, expr, msg) if (!(expr)) {SWIG_JavaThrowException(jenv, SWIG_JavaIllegalArgumentException, msg); return nullreturn; } else
 
 
-double getFinalResult(int a, int b, char c);
+#include "StringEx.h"
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-SWIGEXPORT jdouble JNICALL Java_cpp_1calcJNI_getFinalResult(JNIEnv *jenv, jclass jcls, jint jarg1, jint jarg2, jchar jarg3) {
-  jdouble jresult = 0 ;
-  int arg1 ;
-  int arg2 ;
-  char arg3 ;
-  double result;
+SWIGEXPORT void JNICALL Java_StringEx_1SwigJNI_StringEx_1addName(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jstring jarg2) {
+  StringEx *arg1 = (StringEx *) 0 ;
+  char *arg2 = (char *) 0 ;
   
   (void)jenv;
   (void)jcls;
-  arg1 = (int)jarg1; 
+  (void)jarg1_;
+  arg1 = *(StringEx **)&jarg1; 
+  arg2 = 0;
+  if (jarg2) {
+    arg2 = (char *)jenv->GetStringUTFChars(jarg2, 0);
+    if (!arg2) return ;
+  }
+  (arg1)->addName((char const *)arg2);
+  if (arg2) jenv->ReleaseStringUTFChars(jarg2, (const char *)arg2);
+}
+
+
+SWIGEXPORT jstring JNICALL Java_StringEx_1SwigJNI_StringEx_1getNameAt(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_, jint jarg2) {
+  jstring jresult = 0 ;
+  StringEx *arg1 = (StringEx *) 0 ;
+  int arg2 ;
+  char *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(StringEx **)&jarg1; 
   arg2 = (int)jarg2; 
-  arg3 = (char)jarg3; 
-  result = (double)getFinalResult(arg1,arg2,arg3);
-  jresult = (jdouble)result; 
+  result = (char *)(arg1)->getNameAt(arg2);
+  if (result) jresult = jenv->NewStringUTF((const char *)result);
   return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_StringEx_1SwigJNI_StringEx_1printAll(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  StringEx *arg1 = (StringEx *) 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(StringEx **)&jarg1; 
+  (arg1)->printAll();
+}
+
+
+SWIGEXPORT jint JNICALL Java_StringEx_1SwigJNI_StringEx_1getSize(JNIEnv *jenv, jclass jcls, jlong jarg1, jobject jarg1_) {
+  jint jresult = 0 ;
+  StringEx *arg1 = (StringEx *) 0 ;
+  int result;
+  
+  (void)jenv;
+  (void)jcls;
+  (void)jarg1_;
+  arg1 = *(StringEx **)&jarg1; 
+  result = (int)(arg1)->getSize();
+  jresult = (jint)result; 
+  return jresult;
+}
+
+
+SWIGEXPORT jlong JNICALL Java_StringEx_1SwigJNI_new_1StringEx(JNIEnv *jenv, jclass jcls) {
+  jlong jresult = 0 ;
+  StringEx *result = 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  result = (StringEx *)new StringEx();
+  *(StringEx **)&jresult = result; 
+  return jresult;
+}
+
+
+SWIGEXPORT void JNICALL Java_StringEx_1SwigJNI_delete_1StringEx(JNIEnv *jenv, jclass jcls, jlong jarg1) {
+  StringEx *arg1 = (StringEx *) 0 ;
+  
+  (void)jenv;
+  (void)jcls;
+  arg1 = *(StringEx **)&jarg1; 
+  delete arg1;
 }
 
 
