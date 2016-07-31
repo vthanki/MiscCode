@@ -1,0 +1,10 @@
+The DBus session service is registered with the name "org.geekpur.vishal.BKD".
+It has only one read-only method implemented called "GetBackspaceCount" which
+returns the number of times user has pressed backspace key.
+
+Since the service reads events from /dev/input/eventX file, it requires the
+super user privileges. To do so, the application uses the setuid() call and
+thus requiring the special capabilities; which should be achieved by running
+following command:
+
+$ sudo setcap cap_setuid+ep bkd-dbus-service 
