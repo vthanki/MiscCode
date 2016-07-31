@@ -7,4 +7,10 @@ super user privileges. To do so, the application uses the setuid() call and
 thus requiring the special capabilities; which should be achieved by running
 following command:
 
-$ sudo setcap cap_setuid+ep bkd-dbus-service 
+$ sudo setcap cap_setuid+ep bkd-dbus-service
+
+NOTE:
+Currently the source code uses the "/dev/input/event4" as the hard-coded
+input file which must be changed as per input event device node on the
+running computer. The code to auto detect the input event file is yet
+to be added.
