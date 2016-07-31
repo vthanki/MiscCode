@@ -1,3 +1,11 @@
+/*
+ * Original code from :
+ * https://leonardoce.wordpress.com/2015/04/01/dbus-tutorial-a-simple-server/
+ *
+ * Modified according to the need.
+ */
+
+
 #include <dbus/dbus.h>
 #include <stdio.h>
 #include <stdlib.h>
