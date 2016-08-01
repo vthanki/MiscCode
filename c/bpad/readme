@@ -1,0 +1,13 @@
+######## Breakpad QuickStart
+
+1. Compile source code with -g option and generate executable/library
+2. Run dump_syms on the generated object file (exe or lib)
+3. Step 2 will dump symbols on stdout, store it in .sym file
+4. do "head -n1" on .sym file
+5. Extract the HASH from the step 4, and create a directory with following file
+structure:
+ ./symbols/<lib/exe>/<hash>/
+6. Copy the .sym file generated at step 2 to above directory structure
+7. Strip the exe/lib to remove debugging information
+8. Run exe/lib which causes the crash, it will generate a dump file
+9. Run minidump_stackwalk <dump-file> <symbol-path>
