@@ -1034,7 +1034,6 @@ static void RfPrintStack(const CallStack *stack,
 			frmInfo.m_funcOffset = instruction_address;
 		}
 
-		int sequence = 0;
 		if (cpu == "arm") {
 			const StackFrameARM *frame_arm =
 				reinterpret_cast<const StackFrameARM*>(frame);
