@@ -105,3 +105,10 @@ all.config
 
 # Kdevelop4
 *.kdev4
+
+# Java
+*.class
+
+# Custom
+a.out
+cppcrash
