@@ -4,6 +4,7 @@ package org.echocat.breakpad4j.stacktrace;
  * Created by vishal.thanki@teufel.local on 7/28/16.
  */
 public class FrameInfo {
+    int frameId;
     String moduleName;
     String functionName;
     String sourceFileName;
@@ -28,5 +29,9 @@ public class FrameInfo {
 
     public long getModuleOffset() {
 	    return this.moduleOffset;
+    }
+
+    public int getFrameId() {
+	    return this.frameId;
     }
 }

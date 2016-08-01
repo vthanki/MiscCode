@@ -22,13 +22,18 @@ public class Main {
 			for (ThreadInfo threadInfo : stackTrace.threads) {
 				System.out.println("Thread : " + threadInfo.getThreadId());
 				for (FrameInfo frameInfo : threadInfo.frames) {
-					System.out.print(frameInfo.getModuleName());
+					System.out.print(frameInfo.getFrameId() + " " + frameInfo.getModuleName());
 					if (!frameInfo.getFunctionName().isEmpty()) {
 						System.out.print("!" + frameInfo.getFunctionName() + "[");
 						System.out.print(frameInfo.getSourceFileName() + ":");
-						System.out.print(frameInfo.getSourceLine() + "]");
+						System.out.print(frameInfo.getSourceLine());
 					}
-					System.out.println("+" + String.format("0x%016x", frameInfo.getModuleOffset()));
+					System.out.print(" + " + String.format("0x%x", frameInfo.getModuleOffset()));
+					if (!frameInfo.getFunctionName().isEmpty()) {
+						System.out.print("]");
+					}
+					System.out.println();
+
 				}
 			}
 		} catch (IOException e) {
