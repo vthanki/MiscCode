@@ -55,6 +55,7 @@ JNIEXPORT jobject JNICALL Java_org_echocat_breakpad4j_stacktrace_Main_getStackTr
 	jfieldID jfidFrameInfoSourceFileName = env->GetFieldID(jclsFrameInfo, "sourceFileName", "Ljava/lang/String;");
 	jfieldID jfidFrameInfoSourceLine = env->GetFieldID(jclsFrameInfo, "sourceLine", "J");
 	jfieldID jfidFrameInfoModuleOffset = env->GetFieldID(jclsFrameInfo, "moduleOffset", "J");
+	jfieldID jfidFrameInfoFrameId = env->GetFieldID(jclsFrameInfo, "frameId", "I");
 
 
 	jmethodID midStackTraceCons = env->GetMethodID(jclsStackTrace, "<init>", "()V");
@@ -90,6 +91,7 @@ JNIEXPORT jobject JNICALL Java_org_echocat_breakpad4j_stacktrace_Main_getStackTr
 			env->SetObjectField(jobjFrameInfo, jfidFrameInfoSourceFileName, env->NewStringUTF(frame.getSrcFileName()));
 			env->SetLongField(jobjFrameInfo, jfidFrameInfoModuleOffset, frame.m_funcOffset);
 			env->SetLongField(jobjFrameInfo, jfidFrameInfoSourceLine, frame.m_srcFileOffset);
+			env->SetLongField(jobjFrameInfo, jfidFrameInfoFrameId, frame.m_frameId);
 
 			env->CallBooleanMethod(jobjFrameInfoList, midListAdd, jobjFrameInfo);
 		}
