@@ -24,13 +24,15 @@ public class Main {
 				for (FrameInfo frameInfo : threadInfo.frames) {
 					System.out.print(frameInfo.getFrameId() + " " + frameInfo.getModuleName());
 					if (!frameInfo.getFunctionName().isEmpty()) {
-						System.out.print("!" + frameInfo.getFunctionName() + "[");
-						System.out.print(frameInfo.getSourceFileName() + ":");
+						System.out.print("!" + frameInfo.getFunctionName());
+					}
+					if (!frameInfo.getSourceFileName().isEmpty()) {
+						System.out.print(" [ " + frameInfo.getSourceFileName() + ":");
 						System.out.print(frameInfo.getSourceLine());
 					}
 					System.out.print(" + " + String.format("0x%x", frameInfo.getModuleOffset()));
-					if (!frameInfo.getFunctionName().isEmpty()) {
-						System.out.print("]");
+					if (!frameInfo.getSourceFileName().isEmpty()) {
+						System.out.print(" ]");
 					}
 					System.out.println();
 

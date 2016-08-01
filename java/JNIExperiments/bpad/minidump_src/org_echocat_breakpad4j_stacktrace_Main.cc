@@ -88,10 +88,12 @@ JNIEXPORT jobject JNICALL Java_org_echocat_breakpad4j_stacktrace_Main_getStackTr
 
 			env->SetObjectField(jobjFrameInfo, jfidFrameInfoModuleName, env->NewStringUTF(frame.getBinFileName()));
 			env->SetObjectField(jobjFrameInfo, jfidFrameInfoFunctionName, env->NewStringUTF(frame.getFuncName()));
-			env->SetObjectField(jobjFrameInfo, jfidFrameInfoSourceFileName, env->NewStringUTF(frame.getSrcFileName()));
 			env->SetLongField(jobjFrameInfo, jfidFrameInfoModuleOffset, frame.m_funcOffset);
-			env->SetLongField(jobjFrameInfo, jfidFrameInfoSourceLine, frame.m_srcFileOffset);
-			env->SetLongField(jobjFrameInfo, jfidFrameInfoFrameId, frame.m_frameId);
+			if (frame.getSrcFileName()) {
+				env->SetObjectField(jobjFrameInfo, jfidFrameInfoSourceFileName, env->NewStringUTF(frame.getSrcFileName()));
+				env->SetLongField(jobjFrameInfo, jfidFrameInfoSourceLine, frame.m_srcFileOffset);
+			}
+			env->SetIntField(jobjFrameInfo, jfidFrameInfoFrameId, frame.m_frameId);
 
 			env->CallBooleanMethod(jobjFrameInfoList, midListAdd, jobjFrameInfo);
 		}
