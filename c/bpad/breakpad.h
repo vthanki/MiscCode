@@ -9,8 +9,8 @@ public:
 
 private:
     static bool dumpCallback(const google_breakpad::MinidumpDescriptor& descriptor, void* context, bool succeeded);
-    google_breakpad::MinidumpDescriptor m_descriptor;
-    google_breakpad::ExceptionHandler m_exceptionHandler;
+    google_breakpad::MinidumpDescriptor *m_descriptor;
+    google_breakpad::ExceptionHandler *m_exceptionHandler;
 
 };
 
