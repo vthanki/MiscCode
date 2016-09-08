@@ -5,13 +5,22 @@ int main(int argc, char *argv[])
 {
 
 	// Sweep from 20hz to 20khz
-	//	Waveform wave(20, 20000, 500);
-	//	wave.write_to_file(argv[1]);
+	Waveform wave1(argv[1]);
+	Waveform wave2(argv[2]);
+
+//	wave1.write_to_file(argv[1]);
+//	wave2.write_to_file(argv[2]);
+
+	Waveform w(50);
+	if (w.get_deviation(wave1, wave2, w))
+		w.write_to_file(argv[3]);
+	else
+		std::cout << "Cannot find deviation\n" << std::flush;
 
 	// Read data from file
 	//	Waveform wave(argv[1]);
 	//	wave.dump();
-
+#if 0
 	// Read the RMS value for a particular freq
 	Device d;
 	d.enable_input(5);
@@ -26,4 +35,5 @@ int main(int argc, char *argv[])
 	else
 		std::cout << "Freq: " << freq << "\tRMS: " << rms_out << std::endl << std::flush;
 	return 0;
+#endif
 }

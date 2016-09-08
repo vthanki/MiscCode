@@ -8,7 +8,6 @@ Waveform::Waveform(void)
 	this->num_samples = 0;
 }
 
-
 // Generate data by sweeping from start frequency to end frequency for X number
 // of samples
 Waveform::Waveform(double start_freq, double end_freq, int num_samples)
@@ -64,6 +63,13 @@ Waveform::Waveform(const char *waveform_data_file)
 	file.close();
 }
 
+Waveform::Waveform(int num_samples)
+{
+	this->num_samples = num_samples;
+	this->frequencies.reserve(num_samples);
+	this->volt_rms.reserve(num_samples);
+}
+
 Waveform::~Waveform(void)
 {
 	/* Place holder */
@@ -107,3 +113,68 @@ void Waveform::dump(void)
 
 }
 
+void Waveform::resize(int num_samples)
+{
+	if (this->num_samples == num_samples)
+		return;
+
+	this->num_samples = num_samples;
+	this->frequencies.resize(num_samples);
+	this->volt_rms.resize(num_samples);
+}
+
+void Waveform::set_freq_at(double freq, int index)
+{
+	if (index < this->num_samples)
+		this->frequencies[index] = freq;
+}
+
+void Waveform::set_vrms_at(double vrms, int index)
+{
+	if (index < this->num_samples)
+		this->volt_rms[index] = vrms;
+}
+
+bool Waveform::get_vrms_at(double& vrms, int index)
+{
+	if (index >= this->num_samples)
+		return false;
+
+	vrms = this->volt_rms[index];
+	return true;
+}
+
+bool Waveform::get_freq_at(double& freq, int index)
+{
+	if (index >= this->num_samples)
+		return false;
+
+	freq = this->frequencies[index];
+	return true;
+}
+
+bool Waveform::get_deviation(Waveform w1, Waveform w2, Waveform& w)
+{
+	if (w1.get_num_samples() != w2.get_num_samples()) {
+		std::cout << "Mismatch in number of samples of two waveforms\n" << std::flush;
+		return false;
+	}
+
+	int num_samples = w1.get_num_samples();
+	w.resize(num_samples);
+
+	for (int i = 0; i < num_samples; i++) {
+		double w1_freq, w2_freq;
+		w1.get_freq_at(w1_freq, i);
+		w2.get_freq_at(w2_freq, i);
+		w.set_freq_at(w1_freq - w2_freq, i);
+
+		double w1_vrms, w2_vrms;
+		w1.get_vrms_at(w1_vrms, i);
+		w2.get_vrms_at(w2_vrms, i);
+		w.set_vrms_at(w1_vrms - w2_vrms, i);
+		//printf("Difference of vrms at freq :%lf is (%lf - %lf) = %lf\n",
+		//		w1_freq, w1_vrms, w2_vrms, w1_vrms - w2_vrms);
+	}
+	return true;
+}
