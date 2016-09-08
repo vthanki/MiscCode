@@ -1,2 +1,2 @@
 #!/bin/sh
-g++ main.cc Waveform.cc -ldwf -lm
+g++ main.cc Waveform.cc Device.cc -ldwf -lm -std=c++11

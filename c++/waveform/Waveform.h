@@ -1,4 +1,3 @@
-#include "sample.h"
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -11,11 +10,8 @@ class Waveform {
 		vector<double> volt_rms;
 		double volt_ref;
 		int num_samples;
-		int input_samples;
 
-		int device_config(void);
 		double measure_rms(int dev_handle, double frequency);
-		void device_close(int dev_handle);
 	public:
 		Waveform(void);
 		Waveform(double start_freq, double end_freq, int num_samples);
