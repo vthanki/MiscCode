@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+from device import Device
 from ctypes import *
 import time
 import sys
@@ -22,8 +23,8 @@ class Waveform:
 
         for i in range(0, numSamples):
             freq = 10 ** startl
-            rms = self.device.readRMS(freq, numSamples)
-            if !math.isnan(rms):
+            rms = self.device.readRMS(freq, int(freq*32))
+            if math.isnan(rms) == False:
                 self.frequencies.append(freq)
                 self.voltRms.append(rms)
 
@@ -42,3 +43,6 @@ class Waveform:
                 self.frequencies.append(freq)
                 self.voltRms.append(vrms)
 
+    def dumpData(self):
+        for freq, vrms in zip(self.frequencies, self.voltRms):
+            print 'Freq:', freq, 'Vrms:', vrms
