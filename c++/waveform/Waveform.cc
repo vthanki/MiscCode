@@ -16,6 +16,10 @@ Waveform::Waveform(double start_freq, double end_freq, int num_samples)
 	int i;
 	Device dev;
 
+	if (!dev.is_open()) {
+		this->num_samples = 0;
+		return;
+	}
 	dev.enable_input(5);
 	dev.enable_output(1.41);
 
@@ -88,6 +92,11 @@ int Waveform::get_num_samples(void)
 int Waveform::write_to_file(const char *filename)
 {
 	ofstream target_file;
+
+	if (this->num_samples == 0) {
+		std::cout << "No Samples available for this waveform, skip writing to file." << std::endl << std::flush;
+		return -1;
+	}
 
 	target_file.open(filename);
 	if (!target_file.is_open())
