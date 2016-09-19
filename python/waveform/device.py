@@ -38,8 +38,8 @@ class Device:
         self.dwf.FDwfAnalogInBufferSizeSet(self.dev_handle, c_int(numSamples))
         self.dwf.FDwfAnalogInFrequencySet(self.dev_handle, c_double(samplingFreq))
 
-        self.dwf.FDwfAnalogInFrequencyGet(self.dev_handle, byref(acqFreq));
-	self.dwf.FDwfAnalogInRecordLengthSet(self.dev_handle, c_double(1.0 * numSamples / acqFreq.value)) 
+        self.dwf.FDwfAnalogInFrequencyGet(self.dev_handle, byref(acqFreq))
+        self.dwf.FDwfAnalogInRecordLengthSet(self.dev_handle, c_double(1.0 * numSamples / acqFreq.value))
         self.dwf.FDwfAnalogInConfigure(self.dev_handle, c_bool(False), c_bool(True))
 
     def setOutputConfig(self, signalFreq):
@@ -89,5 +89,5 @@ class Device:
 
 #            print numSamples, sum_availSamples, ls_sum, cs_sum
             rms = math.sqrt(rms_sum/numSamples)
-#            print freq, rms
+            print freq, rms
             return rms
