@@ -13,15 +13,12 @@ private:
 	short int len;
 
 	void prependDigits(int digit);
-	int getDigitAt(int index) const;
 	void shrink();
-	void setLen(int len);
 
 public:
 	BigInteger(): len(0) {
 		memset(arr, 0x0, sizeof(arr));
 	}
-	//BigInteger(const char *value, int base);
 	BigInteger(string digits, int base);
 	BigInteger(int val);
 
@@ -35,7 +32,6 @@ public:
 	bool operator > (BigInteger b) const;
 	bool operator < (BigInteger b) const;
 	bool operator == (BigInteger b) const;
-	//string operator << (BigInteger b);
 };
 
 BigInteger::BigInteger(string digits, int base) {
@@ -69,22 +65,13 @@ void BigInteger::prependDigits(int digit) {
 	len++;
 }
 
-int BigInteger::getDigitAt(int index) const {
-	return arr[index];
-}
-
-void BigInteger::setLen(int newLen) {
-	if (newLen == 0)
-		newLen = 1;
-	len = newLen;
-}
-
 void BigInteger::shrink() {
 	int lenToShrink = 0;
 	for (int i = 0; i < NR_DIGITS && !(arr[i]); i++)
 		lenToShrink++;
 
-	setLen(len - lenToShrink);
+	len -= lenToShrink;
+	if (!len) len = 1;
 }
 
 void BigInteger::show() const {
@@ -111,7 +98,7 @@ bool BigInteger::operator >(BigInteger b) const {
 	if (len > b.getlen())
 		return true;
 
-	if (len == b.getlen() && arr[NR_DIGITS - len] > b.getDigitAt(NR_DIGITS - len))
+	if (len == b.getlen() && arr[NR_DIGITS - len] > b.arr[NR_DIGITS - len])
 		return true;
 
 	return false;
@@ -148,11 +135,11 @@ BigInteger BigInteger::operator -(BigInteger b) const {
 	BigInteger result;
 	int dig, carry = 0;
 	for (int i = NR_DIGITS - 1; i >= 0; i--) {
-		if ((arr[i] + carry) < b.getDigitAt(i)) {
-			dig = arr[i] + carry + 10 - b.getDigitAt(i);
+		if ((arr[i] + carry) < b.arr[i]) {
+			dig = arr[i] + carry + 10 - b.arr[i];
 			carry = -1;
 		} else {
-			dig = arr[i] + carry - b.getDigitAt(i);
+			dig = arr[i] + carry - b.arr[i];
 			carry = 0;
 		}
 		result.prependDigits(dig);
