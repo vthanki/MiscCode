@@ -28,9 +28,9 @@ public:
 
 	BigInteger operator +(BigInteger b) const;
 	BigInteger operator -(BigInteger b) const;
-	bool operator > (BigInteger b) const;
-	bool operator < (BigInteger b) const;
-	bool operator == (BigInteger b) const;
+	bool operator > (BigInteger& b) const;
+	bool operator < (BigInteger& b) const;
+	bool operator == (BigInteger& b) const;
 };
 
 BigInteger::BigInteger(string digits, int base) {
@@ -90,7 +90,7 @@ short int BigInteger::getlen() const {
 	return len;
 }
 
-bool BigInteger::operator >(BigInteger b) const {
+bool BigInteger::operator >(BigInteger& b) const {
 
 	if (len > b.len)
 		return true;
@@ -101,11 +101,11 @@ bool BigInteger::operator >(BigInteger b) const {
 	return false;
 }
 
-bool BigInteger::operator ==(BigInteger b) const {
+bool BigInteger::operator ==(BigInteger& b) const {
 	return (isPositive == b.isPositive) && !memcmp(arr, b.arr, sizeof(arr));
 }
 
-bool BigInteger::operator <(BigInteger b) const {
+bool BigInteger::operator <(BigInteger& b) const {
 	return !(*this > b) && !(*this == b);
 }
 
@@ -153,8 +153,8 @@ BigInteger BigInteger::operator -(BigInteger b) const {
 }
 
 int main(int argc, char *argv[]) {
-	BigInteger b1(498);
-	BigInteger b2 = 500;
+	BigInteger b1(1234);
+	BigInteger b2 = 12345;
 	BigInteger b3 = b1 - b2;
 	b3.show();
 	return 0;
