@@ -14,6 +14,7 @@ private:
 	bool isPositive;
 
 	void prependDigits(int digit);
+	void appendZeros(int count);
 	void shrink();
 
 public:
@@ -28,9 +29,11 @@ public:
 
 	BigInteger operator +(BigInteger b) const;
 	BigInteger operator -(BigInteger b) const;
+	BigInteger operator *(BigInteger b) const;
 	bool operator > (BigInteger& b) const;
 	bool operator < (BigInteger& b) const;
 	bool operator == (BigInteger& b) const;
+
 };
 
 BigInteger::BigInteger(string digits, int base) {
@@ -64,6 +67,12 @@ BigInteger::BigInteger(int value) {
 void BigInteger::prependDigits(int digit) {
 	arr[NR_DIGITS-1-len] = digit;
 	len++;
+}
+
+void BigInteger::appendZeros(int count) {
+	memcpy(&arr[NR_DIGITS-len-count], &arr[NR_DIGITS-len], len*sizeof(arr[0]));
+	memset(&arr[NR_DIGITS-count], 0x0, count*sizeof(arr[0]));
+	len += count;
 }
 
 void BigInteger::shrink() {
@@ -152,10 +161,40 @@ BigInteger BigInteger::operator -(BigInteger b) const {
 	return result;
 }
 
+BigInteger BigInteger::operator *(BigInteger b) const {
+
+	BigInteger result;
+	BigInteger *intermediate = new BigInteger[b.len];
+	int trailingZeros = b.len - 1;
+	int intId = 0;
+	for (int i = NR_DIGITS-b.len; i < NR_DIGITS ; i++) {
+		int k = NR_DIGITS-1;
+		int carry = 0;
+		for (int j = NR_DIGITS-1; j >= NR_DIGITS-len || carry; j--) {
+			int dig = (b.arr[i] * arr[j]) + carry;
+			carry = dig / 10;
+			intermediate[intId].arr[k] = dig%10;
+			intermediate[intId].len++;
+
+			k--;
+		}
+		intermediate[intId].appendZeros(trailingZeros);
+		trailingZeros--;
+		intId++;
+	}
+
+	for (int i = 0; i < b.len; i++) {
+		result = result + intermediate[i];
+	}
+
+
+	return result;
+}
+
+
 int main(int argc, char *argv[]) {
-	BigInteger b1(1234);
-	BigInteger b2 = 12345;
-	BigInteger b3 = b1 - b2;
+	BigInteger b1("13395024444659582328972621742336",10), b2("13395024444659582328972621742336",10);
+	BigInteger b3 = b1 * b2;
 	b3.show();
 	return 0;
 }
