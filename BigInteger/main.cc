@@ -31,7 +31,11 @@ public:
 	BigInteger operator -(BigInteger b) const;
 	BigInteger operator *(BigInteger b) const;
 	bool operator > (BigInteger& b) const;
+	bool operator > (int b) const;
+
 	bool operator < (BigInteger& b) const;
+	bool operator < (int b) const;
+
 	bool operator == (BigInteger& b) const;
 
 };
@@ -57,6 +61,8 @@ BigInteger::BigInteger(int value) {
 	len = 0;
 	memset(arr, 0x0, sizeof(arr));
 	isPositive = (value >= 0);
+	if (!isPositive)
+		value = -value;
 	do {
 		arr[i] = value % 10;
 		value /= 10;
@@ -113,6 +119,11 @@ bool BigInteger::operator >(BigInteger& b) const {
 	return false;
 }
 
+bool BigInteger::operator >(int b) const {
+	BigInteger bi(b);
+	return *this > bi;
+}
+
 bool BigInteger::operator ==(BigInteger& b) const {
 	return (isPositive == b.isPositive) && !memcmp(arr, b.arr, sizeof(arr));
 }
@@ -121,7 +132,14 @@ bool BigInteger::operator <(BigInteger& b) const {
 	return !(*this > b) && !(*this == b);
 }
 
+bool BigInteger::operator <(int b) const {
+	BigInteger bi(b);
+	return *this < bi;
+}
+
+
 BigInteger BigInteger::operator +(BigInteger b) const {
+#if 0
 	int alen = getlen(), blen = b.getlen();
 	int max = alen > blen ? alen : blen;
 	int carry = 0;
@@ -136,13 +154,38 @@ BigInteger BigInteger::operator +(BigInteger b) const {
 		i++;
 		max--;
 	}
+#else
+	BigInteger result;
 
+	if (b < 0) {
+		BigInteger temp = b;
+		temp.isPositive = true;
+		result = *this - temp;
+	} else if (*this < 0) {
+		BigInteger temp = *this;
+		temp.isPositive = true;
+		result = b - temp;
+	} else {
+
+		int carry = 0;
+		int i = NR_DIGITS - 1;
+		do {
+			int dig = arr[i] + b.arr[i] + carry;
+			result.arr[i] = dig % 10;
+			carry = dig / 10;
+			result.len++;
+			i--;
+		} while (carry || result.len < len || result.len < b.len);
+	}
+
+#endif
 	return result;
 }
 
 BigInteger BigInteger::operator -(BigInteger b) const {
-	BigInteger result;
 
+	BigInteger result;
+#if 0
 	if (*this < b) {
 		result = b - *this;
 		result.isPositive = false;
@@ -161,6 +204,29 @@ BigInteger BigInteger::operator -(BigInteger b) const {
 	}
 
 	result.shrink();
+#else
+	if (b < 0) {
+		BigInteger temp = b;
+		temp.isPositive = true;
+		result = *this + temp;
+	} else if  (*this < b) {
+		result = b - *this;
+		result.isPositive = false;
+	} else {
+		int dig, carry = 0;
+		for (int i = NR_DIGITS - 1; i >= 0; i--) {
+			if ((arr[i] + carry) < b.arr[i]) {
+				dig = arr[i] + carry + 10 - b.arr[i];
+				carry = -1;
+			} else {
+				dig = arr[i] + carry - b.arr[i];
+				carry = 0;
+			}
+			result.prependDigits(dig);
+		}
+	}
+	result.shrink();
+#endif
 	return result;
 }
 
@@ -189,16 +255,20 @@ BigInteger BigInteger::operator *(BigInteger b) const {
 	for (int i = 0; i < b.len; i++) {
 		result = result + intermediate[i];
 	}
+	delete intermediate;
+
+	result.isPositive = isPositive && b.isPositive;
 
 	return result;
 }
-
 
 int main(int argc, char *argv[]) {
 	BigInteger b1("13395024444659582328972621742336",10), b2("13395024444659582328972621742336",10);
 	BigInteger b3 = b1 * b2;
 	b3.show();
-	BigInteger b4 = 5, b5 = -5;
-	cout << (b4 > b5);
+	BigInteger b4 = 0, b5 = 4;
+	cout << (b4 > 0) << endl;
+	b3 = b4 - b5;
+	b3.show();
 	return 0;
 }
