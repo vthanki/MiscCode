@@ -101,6 +101,9 @@ short int BigInteger::getlen() const {
 
 bool BigInteger::operator >(BigInteger& b) const {
 
+	if (!this->isPositive && b.isPositive)
+		return false;
+
 	if (len > b.len)
 		return true;
 
@@ -187,7 +190,6 @@ BigInteger BigInteger::operator *(BigInteger b) const {
 		result = result + intermediate[i];
 	}
 
-
 	return result;
 }
 
@@ -196,5 +198,7 @@ int main(int argc, char *argv[]) {
 	BigInteger b1("13395024444659582328972621742336",10), b2("13395024444659582328972621742336",10);
 	BigInteger b3 = b1 * b2;
 	b3.show();
+	BigInteger b4 = 5, b5 = -5;
+	cout << (b4 > b5);
 	return 0;
 }
