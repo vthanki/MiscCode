@@ -9,7 +9,7 @@ const int NR_DIGITS = 100;
 
 class BigInteger {
 private:
-	int arr[NR_DIGITS];
+	char arr[NR_DIGITS];
 	short int len;
 	bool isPositive;
 
@@ -37,6 +37,8 @@ public:
 	bool operator < (int b) const;
 
 	bool operator == (BigInteger& b) const;
+
+	friend ostream& operator << (ostream& os, const BigInteger &);
 
 };
 
@@ -103,6 +105,15 @@ void BigInteger::show() const {
 
 short int BigInteger::getlen() const {
 	return len;
+}
+
+ostream& operator << (ostream& os, const BigInteger& b) {
+	if (!b.isPositive)
+		os << "-";
+	for (int i = NR_DIGITS - b.len; i < NR_DIGITS; i++)
+		if (b.arr[i] >= 0)
+			os << static_cast<int>(b.arr[i]);
+	return os;
 }
 
 bool BigInteger::operator >(BigInteger& b) const {
@@ -265,10 +276,10 @@ BigInteger BigInteger::operator *(BigInteger b) const {
 int main(int argc, char *argv[]) {
 	BigInteger b1("13395024444659582328972621742336",10), b2("13395024444659582328972621742336",10);
 	BigInteger b3 = b1 * b2;
-	b3.show();
-	BigInteger b4 = 0, b5 = 4;
+	cout << b3 << endl;
+	BigInteger b4 = 12, b5 = -4;
 	cout << (b4 > 0) << endl;
-	b3 = b4 - b5;
-	b3.show();
+	b3 = b4 * b5;
+	cout << b3 << endl;
 	return 0;
 }
