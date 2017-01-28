@@ -18,6 +18,14 @@ private:
 	void shrink();
 
 public:
+	class BigIntegerEx {
+		string reason;
+	public:
+		BigIntegerEx(string s) : reason(s) {}
+		string showReason() { return reason; }
+	};
+
+
 	BigInteger(): len(0), isPositive(true) {
 		memset(arr, 0x0, sizeof(arr));
 	}
@@ -43,17 +51,28 @@ public:
 };
 
 BigInteger::BigInteger(string digits, int base) {
+
+	if (digits.size() > NR_DIGITS) {
+		throw BigIntegerEx("Number too large");
+	}
+
+	len = digits.size();
+
 	memset(arr, 0x0, sizeof(arr));
 	isPositive = (digits[0] != '-');
-	len = digits.size();
-	//TODO: Throw exception in case of unsupported base
+
 	switch(base) {
 	case 10:
 		int i, j;
 		for (i = len - 1,j = NR_DIGITS-1; i >= 0; i--, j--) {
-			//TODO: Add sanity check for isDigit
-			arr[j] = digits[i] - '0';
+			if (digits[i] >= '0' && digits[i] <= '9')
+				arr[j] = digits[i] - '0';
+			else
+				throw BigIntegerEx("Invalid digit encountered in number");
 		}
+		break;
+	default:
+		throw BigIntegerEx("Base not supported");
 		break;
 	}
 }
@@ -69,6 +88,10 @@ BigInteger::BigInteger(int value) {
 		arr[i] = value % 10;
 		value /= 10;
 		i--;
+		/* TODO: Remove this limit by using vectors instead of an array */
+		if (len > NR_DIGITS) {
+			throw BigIntegerEx("Number too large");
+		}
 	} while (++len && value);
 }
 
@@ -274,12 +297,17 @@ BigInteger BigInteger::operator *(BigInteger b) const {
 }
 
 int main(int argc, char *argv[]) {
-	BigInteger b1("13395024444659582328972621742336",10), b2("13395024444659582328972621742336",10);
-	BigInteger b3 = b1 * b2;
-	cout << b3 << endl;
-	BigInteger b4 = 12, b5 = -4;
-	cout << (b4 > 0) << endl;
-	b3 = b4 * b5;
-	cout << b3 << endl;
+	try {
+		BigInteger b1("13395024444659582328972621742336",12), b2("13395024444659582328972621742336",10);
+		BigInteger b3 = b1 * b2;
+		cout << b3 << endl;
+		BigInteger b4 = 12, b5 = -4;
+		cout << (b4 > 0) << endl;
+		b3 = b4 * b5;
+		cout << b3 << endl;
+	} catch (BigInteger::BigIntegerEx& ex) {
+		cout << ex.showReason();
+	}
+
 	return 0;
 }
