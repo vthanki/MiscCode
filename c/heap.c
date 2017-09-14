@@ -13,13 +13,13 @@ typedef struct heap {
 } heap_t;
 
 
-heap_t *alloc_heap(int capacity)
+heap_t *alloc_heap(int capacity, int type)
 {
 	heap_t *heap = (heap_t *)malloc(sizeof(heap_t));
 	heap->capacity = capacity;
 	heap->arr = (int *)malloc(sizeof(int) * heap->capacity);
 	heap->size = 0;
-	heap->type = MIN_HEAP;
+	heap->type = type;
 	return heap;
 }
 
@@ -93,18 +93,20 @@ void swap(heap_t *heap, int idx1, int idx2)
 	heap->arr[idx2] = temp;
 }
 
+int heap_cond(heap_t *heap, int ele1, int ele2)
+{
+	return (heap->type == MIN_HEAP) ?
+		(ele1 < ele2):(ele1 > ele2);
+}
 void adjust_up(heap_t *heap)
 {
 	int curr_idx = heap->size - 1;
 
 	while (has_parent(heap, curr_idx) &&
-		(get_parent(heap, curr_idx) > heap->arr[curr_idx])) {
+		heap_cond(heap, heap->arr[curr_idx], get_parent(heap, curr_idx))) {
 		swap(heap, get_parent_idx(curr_idx), curr_idx);
 		curr_idx = get_parent_idx(curr_idx);
 	}
-//	for (int i = 0; i < 4; i++)	printf("%04d ", heap->arr[i]);
-//	printf("%s: curr_idx:%d, parent_idx:%d, parent:%d top:%d has_parent:%d\n", __func__, curr_idx,
-//			get_parent_idx(curr_idx), get_parent(heap, curr_idx), heap->arr[curr_idx], has_parent(heap, curr_idx));
 }
 
 void push(heap_t *heap, int value)
@@ -125,10 +127,10 @@ void adjust_down(heap_t *heap)
 	while (has_lchild(heap, curr_idx)) {
 		min_child_idx = get_lchild_idx(curr_idx);
 		if (has_rchild(heap, curr_idx) &&
-			(heap->arr[min_child_idx] > get_rchild(heap, curr_idx)))
+			heap_cond(heap, get_rchild(heap, curr_idx), heap->arr[min_child_idx]))
 			min_child_idx = get_rchild_idx(curr_idx);
 
-		if (heap->arr[min_child_idx] < heap->arr[curr_idx]) {
+		if (heap_cond(heap, heap->arr[min_child_idx], heap->arr[curr_idx])) {
 			swap(heap, min_child_idx, curr_idx);
 			curr_idx = min_child_idx;
 		} else {
@@ -155,7 +157,7 @@ int pop(heap_t *heap)
 
 int main()
 {
-	heap_t *min_heap = alloc_heap(32);
+	heap_t *min_heap = alloc_heap(32, MIN_HEAP);
 	int a[] = {2,5,2,9,7,2,1,4,5,6,7};
 	int ret;
 	for (int i = 0; i < sizeof(a)/sizeof(a[0]); i++) {
