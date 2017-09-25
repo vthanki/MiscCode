@@ -2,53 +2,59 @@
 #include <vector>
 #include <string>
 #include <cstring>
-
 using namespace std;
-
-const int NR_DIGITS = 100;
+const int NR_DIGITS = 500;
 
 class BigInteger {
-private:
-	char arr[NR_DIGITS];
-	short int len;
-	bool isPositive;
+	private:
+		char arr[NR_DIGITS];
+		short int len;
+		bool isPositive;
 
-	void prependDigits(int digit);
-	void appendZeros(int count);
-	void shrink();
+		void prependDigits(int digit);
+		void appendZeros(int count);
+		void shrink();
 
-public:
-	class BigIntegerEx {
-		string reason;
 	public:
-		BigIntegerEx(string s) : reason(s) {}
-		string showReason() { return reason; }
-	};
+		class BigIntegerEx {
+			string reason;
+			public:
+			BigIntegerEx(string s) : reason(s) {}
+			string showReason() { return reason; }
+		};
 
 
-	BigInteger(): len(0), isPositive(true) {
-		memset(arr, 0x0, sizeof(arr));
-	}
-	BigInteger(string digits, int base);
-	BigInteger(int val);
+		BigInteger(): len(0), isPositive(true) {
+			memset(arr, 0x0, sizeof(arr));
+		}
+		BigInteger(string digits, int base);
+		BigInteger(int val);
+		BigInteger(const BigInteger &b);
 
-	void show() const;
-	short int getlen() const;
+		void show() const;
+		short int getlen() const;
 
-	BigInteger operator +(BigInteger b) const;
-	BigInteger operator -(BigInteger b) const;
-	BigInteger operator *(BigInteger b) const;
-	bool operator > (BigInteger& b) const;
-	bool operator > (int b) const;
+		BigInteger operator +(BigInteger b) const;
+		BigInteger operator -(BigInteger b) const;
+		BigInteger operator *(BigInteger b) const;
+		bool operator > (BigInteger b) const;
+		bool operator > (int b) const;
 
-	bool operator < (BigInteger& b) const;
-	bool operator < (int b) const;
+		bool operator < (BigInteger b) const;
+		bool operator < (int b) const;
 
-	bool operator == (BigInteger& b) const;
+		bool operator == (BigInteger b) const;
 
-	friend ostream& operator << (ostream& os, const BigInteger &);
+		friend ostream& operator << (ostream& os, const BigInteger &);
 
 };
+
+BigInteger::BigInteger(const BigInteger &b)
+{
+	memcpy(this->arr, b.arr, sizeof(b.arr));
+	this->len = b.len;
+	this->isPositive = b.isPositive;
+}
 
 BigInteger::BigInteger(string digits, int base) {
 
@@ -62,18 +68,18 @@ BigInteger::BigInteger(string digits, int base) {
 	isPositive = (digits[0] != '-');
 
 	switch(base) {
-	case 10:
-		int i, j;
-		for (i = len - 1,j = NR_DIGITS-1; i >= 0; i--, j--) {
-			if (digits[i] >= '0' && digits[i] <= '9')
-				arr[j] = digits[i] - '0';
-			else
-				throw BigIntegerEx("Invalid digit encountered in number");
-		}
-		break;
-	default:
-		throw BigIntegerEx("Base not supported");
-		break;
+		case 10:
+			int i, j;
+			for (i = len - 1,j = NR_DIGITS-1; i >= 0; i--, j--) {
+				if (digits[i] >= '0' && digits[i] <= '9')
+					arr[j] = digits[i] - '0';
+				else
+					throw BigIntegerEx("Invalid digit encountered in number");
+			}
+			break;
+		default:
+			throw BigIntegerEx("Base not supported");
+			break;
 	}
 }
 
@@ -139,7 +145,7 @@ ostream& operator << (ostream& os, const BigInteger& b) {
 	return os;
 }
 
-bool BigInteger::operator >(BigInteger& b) const {
+bool BigInteger::operator >(BigInteger b) const {
 
 	if (!this->isPositive && b.isPositive)
 		return false;
@@ -158,11 +164,11 @@ bool BigInteger::operator >(int b) const {
 	return *this > bi;
 }
 
-bool BigInteger::operator ==(BigInteger& b) const {
+bool BigInteger::operator ==(BigInteger b) const {
 	return (isPositive == b.isPositive) && !memcmp(arr, b.arr, sizeof(arr));
 }
 
-bool BigInteger::operator <(BigInteger& b) const {
+bool BigInteger::operator <(BigInteger b) const {
 	return !(*this > b) && !(*this == b);
 }
 
@@ -294,6 +300,14 @@ BigInteger BigInteger::operator *(BigInteger b) const {
 	result.isPositive = isPositive && b.isPositive;
 
 	return result;
+}
+
+BigInteger fact(BigInteger b) {
+	BigInteger one(1);
+	if (b == one)
+		return one;
+
+	return b*fact(b-one);
 }
 
 int main(int argc, char *argv[]) {
