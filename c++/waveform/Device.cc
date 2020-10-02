@@ -80,7 +80,7 @@ bool Device::read_rms(double frequency, int num_samples, double& rms_out)
 	}
 
 	// Configure input to take num_samples samples at 64 time higher than signal frequency
-	set_input_config(frequency * 64, num_samples);
+	set_input_config(frequency * 32, num_samples);
 	set_output_config(frequency);
 
 	// Wait 1ms to settle output freq
@@ -93,6 +93,7 @@ bool Device::read_rms(double frequency, int num_samples, double& rms_out)
 	int available_samples, lost_samples, corrupted_samples;
 	bool lost, corrupted;
 	double* samples_data;
+	int cs_sum = 0;
 
 	// Allocate 512 more samples to accommodate last read
 	samples_data = new double[num_samples + 512];
@@ -117,7 +118,10 @@ bool Device::read_rms(double frequency, int num_samples, double& rms_out)
 		available_samples += lost_samples;
 
 		if(lost_samples != 0) lost = true;
-		if(corrupted_samples != 0) corrupted = true;
+		if(corrupted_samples != 0) {
+			corrupted = true;
+			cs_sum += corrupted_samples;
+		}
 
 		if(!available_samples) continue;
 
@@ -134,7 +138,10 @@ bool Device::read_rms(double frequency, int num_samples, double& rms_out)
 		rms_out += pow(samples_data[i], 2);
 
 	rms_out = sqrt(rms_out / captured_samples);
-	std::cout << "Freq: " << frequency << "\tRMS: " << rms_out << std::endl << std::flush;
+	if (cs_sum) {
+		std::cout << "Corrupted Samples: " << cs_sum << std::endl;
+		std::cout << "Freq: " << frequency << "\tRMS: " << rms_out << std::endl << std::flush;
+	}
 
 	delete[] samples_data;
 
